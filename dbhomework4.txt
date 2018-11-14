@@ -1,0 +1,55 @@
+1.
+SELECT TO_CHAR(ck_out_date, 'Month'), count(ck_out_date)
+FROM Check_out 
+WHERE 
+TO_CHAR(ck_out_date, 'MM') = 01 OR
+TO_CHAR(ck_out_date, 'MM') = 02 OR
+TO_CHAR(ck_out_date, 'MM') = 03 OR
+TO_CHAR(ck_out_date, 'MM') = 04 OR
+TO_CHAR(ck_out_date, 'MM') = 05 OR
+TO_CHAR(ck_out_date, 'MM') = 06 OR
+TO_CHAR(ck_out_date, 'MM') = 07 OR
+TO_CHAR(ck_out_date, 'MM') = 08 OR
+TO_CHAR(ck_out_date, 'MM') = 09 OR
+TO_CHAR(ck_out_date, 'MM') = 10 OR
+TO_CHAR(ck_out_date, 'MM') = 11 OR
+TO_CHAR(ck_out_date, 'MM') = 12 
+GROUP BY TO_CHAR(ck_out_date, 'Month');
+
+
+2.
+SELECT Style 
+FROM Furniture 
+WHERE (SELECT F_ID
+FROM Check_out 
+WHERE 
+TO_CHAR(ck_out_date, 'DY') = 'SUN') = Furniture.F_id;
+
+3. 
+SELECT concat(Name,'* To be contacted')
+FROM Customers
+WHERE 
+	 (SELECT C_ID
+	 FROM Check_Out
+	 WHERE
+	 ck_out_date>= sysdate-15 AND ck_out_date < sysdate AND Ret_date IS NULL) = Customers.C_id;
+
+4.
+
+SELECT F_id, Category,
+						CASE
+						WHEN Style = 'modern'
+							THEN 'M'
+						WHEN Style = 'rustic'
+							THEN 'R'
+						WHEN Style = 'traditional'
+							THEN 'T'
+						ELSE
+							'NOT modern rustic or traditional'
+						END
+FROM Furniture
+WHERE
+	 (SELECT F_ID
+	 FROM Check_Out
+	 WHERE 
+	 TO_CHAR(ck_out_date, 'MON') = 'OCT' AND TO_CHAR(ret_date, 'MON') = 'NOV') = Furniture.F_ID;
