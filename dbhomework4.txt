@@ -1,56 +1,72 @@
 1.
-SELECT TO_CHAR(ck_out_date, 'Month'), count(ck_out_date)
-FROM Check_out 
+SELECT 
+	TO_CHAR(ck_out_date, 'Month'), count(ck_out_date)
+FROM 
+	Check_out 
 WHERE 
-TO_CHAR(ck_out_date, 'MM') = 01 OR
-TO_CHAR(ck_out_date, 'MM') = 02 OR
-TO_CHAR(ck_out_date, 'MM') = 03 OR
-TO_CHAR(ck_out_date, 'MM') = 04 OR
-TO_CHAR(ck_out_date, 'MM') = 05 OR
-TO_CHAR(ck_out_date, 'MM') = 06 OR
-TO_CHAR(ck_out_date, 'MM') = 07 OR
-TO_CHAR(ck_out_date, 'MM') = 08 OR
-TO_CHAR(ck_out_date, 'MM') = 09 OR
-TO_CHAR(ck_out_date, 'MM') = 10 OR
-TO_CHAR(ck_out_date, 'MM') = 11 OR
-TO_CHAR(ck_out_date, 'MM') = 12 
-GROUP BY TO_CHAR(ck_out_date, 'Month');
+	TO_CHAR(ck_out_date, 'MM') = 01 OR
+	TO_CHAR(ck_out_date, 'MM') = 02 OR
+	TO_CHAR(ck_out_date, 'MM') = 03 OR
+	TO_CHAR(ck_out_date, 'MM') = 04 OR
+	TO_CHAR(ck_out_date, 'MM') = 05 OR
+	TO_CHAR(ck_out_date, 'MM') = 06 OR
+	TO_CHAR(ck_out_date, 'MM') = 07 OR
+	TO_CHAR(ck_out_date, 'MM') = 08 OR
+	TO_CHAR(ck_out_date, 'MM') = 09 OR
+	TO_CHAR(ck_out_date, 'MM') = 10 OR
+	TO_CHAR(ck_out_date, 'MM') = 11 OR
+	TO_CHAR(ck_out_date, 'MM') = 12 
+	GROUP BY TO_CHAR(ck_out_date, 'Month');
 
 2.
-SELECT Style 
-FROM Furniture 
-WHERE (SELECT F_ID
-FROM Check_out 
-WHERE 
-TO_CHAR(ck_out_date, 'DY') = 'SUN') = Furniture.F_id;
+SELECT 
+	Furniture.Style  
+FROM 
+	Furniture, Check_out
+WHERE
+	Check_out.F_ID = Furniture.F_ID
+	AND
+	TO_CHAR(Check_out.ck_out_date, 'DY') = 'SUN' AND
+	TO_CHAR(Check_out.ck_out_date, 'DY') <> 'MON' AND
+	TO_CHAR(Check_out.ck_out_date, 'DY') <> 'TUE' AND
+	TO_CHAR(Check_out.ck_out_date, 'DY') <> 'WED' AND
+	TO_CHAR(Check_out.ck_out_date, 'DY') <> 'THU' AND
+	TO_CHAR(Check_out.ck_out_date, 'DY') <> 'FRI' AND
+	TO_CHAR(Check_out.ck_out_date, 'DY') <> 'SAT'
+	GROUP BY(Furniture.Style);
 
 3. 
-SELECT concat(Name,'* To be contacted')
-FROM Customers
-WHERE 
-	 (SELECT C_ID
-	 FROM Check_Out
-	 WHERE
-	 ck_out_date>= sysdate-15 AND ck_out_date < sysdate AND Ret_date IS NULL) = Customers.C_id;
+SELECT 
+	concat(Customers.Name,'* To be contacted')
+FROM 
+	Customers, Check_out
+WHERE
+	Check_out.ck_out_date >= sysdate-15 
+	AND 
+	Check_out.ck_out_date < sysdate 
+	AND 
+	Ret_date IS NULL
+	AND 
+	Check_out.C_ID = Customers.C_ID;
 
 4.
-SELECT F_id, Category,
-						CASE
-						WHEN Style = 'modern'
-							THEN 'M'
-						WHEN Style = 'rustic'
-							THEN 'R'
-						WHEN Style = 'traditional'
-							THEN 'T'
-						ELSE
-							'NOT modern rustic or traditional'
-						END
-FROM Furniture
+SELECT 
+	Furniture.F_id, Furniture.Category,
+										CASE
+										WHEN Furniture.Style = 'modern'
+											THEN 'M'
+										WHEN Furniture.Style = 'rustic'
+											THEN 'R'
+										WHEN Furniture.Style = 'traditional'
+											THEN 'T'
+										ELSE
+											'NOT modern rustic or traditional'
+										END
+FROM Furniture, Check_Out
 WHERE
-	 (SELECT F_ID
-	 FROM Check_Out
-	 WHERE 
-	 TO_CHAR(ck_out_date, 'MON') = 'OCT' AND TO_CHAR(ret_date, 'MON') = 'NOV') = Furniture.F_ID;
+	TO_CHAR(Check_out.ck_out_date, 'MON') = 'OCT' AND TO_CHAR(Check_out.ret_date, 'MON') = 'NOV' 
+	AND
+	Check_out.F_ID = Furniture.F_ID;
 
 5.
 CREATE VIEW RusticSum(Totals) AS 
@@ -65,4 +81,3 @@ WHERE
 	Ck_Out_date IS NOT NULL 
 	AND
 	Ret_date IS NOT NULL;
-
