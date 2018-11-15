@@ -16,7 +16,6 @@ TO_CHAR(ck_out_date, 'MM') = 11 OR
 TO_CHAR(ck_out_date, 'MM') = 12 
 GROUP BY TO_CHAR(ck_out_date, 'Month');
 
-
 2.
 SELECT Style 
 FROM Furniture 
@@ -35,7 +34,6 @@ WHERE
 	 ck_out_date>= sysdate-15 AND ck_out_date < sysdate AND Ret_date IS NULL) = Customers.C_id;
 
 4.
-
 SELECT F_id, Category,
 						CASE
 						WHEN Style = 'modern'
@@ -53,3 +51,18 @@ WHERE
 	 FROM Check_Out
 	 WHERE 
 	 TO_CHAR(ck_out_date, 'MON') = 'OCT' AND TO_CHAR(ret_date, 'MON') = 'NOV') = Furniture.F_ID;
+
+5.
+CREATE VIEW RusticSum(Totals) AS 
+SELECT SUM(Price)
+FROM
+	Check_out, Furniture
+WHERE
+	Check_out.F_ID = Furniture.F_ID 
+	AND
+	Style in ('rustic')
+	AND
+	Ck_Out_date IS NOT NULL 
+	AND
+	Ret_date IS NOT NULL;
+
